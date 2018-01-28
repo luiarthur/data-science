@@ -1,0 +1,15 @@
+#!/bin/bash
+
+url="https://www.consumeraffairs.com/travel/united.html?page="
+
+page=`seq 70`
+
+for p in $page
+do
+  #echo "${url}${p}"
+  wget $url$p -O url/${p}.html
+done
+
+
+#wget https://www.consumeraffairs.com/travel/united.html?page=1
+
