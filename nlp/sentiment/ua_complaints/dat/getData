@@ -7,7 +7,7 @@ page=`seq 70`
 for p in $page
 do
   #echo "${url}${p}"
-  wget $url$p -O url/${p}.html
+  wget $url$p -O html/${p}.html
 done
 
 
