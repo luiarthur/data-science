@@ -1,14 +1,16 @@
 #!/bin/bash
 
 url="https://www.consumeraffairs.com/travel/united.html?page="
+MAX_CORES=4
 
 page=`seq 70`
 
 for p in $page
 do
   #echo "${url}${p}"
-  wget $url$p -O html/${p}.html
+  sem -j $MAX_CORES wget $url$p -O html/${p}.html
 done
+sem --wait
 
 
 #wget https://www.consumeraffairs.com/travel/united.html?page=1
