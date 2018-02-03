@@ -21,15 +21,15 @@ p = zeros(size(X, 1), 1);
 %       can use max(A, [], 2) to obtain the max for each row.
 %
 
+X1 = cat(2, ones(m,1), X) % add column of ones
+z2 = X1 * Theta1'
+a2 = sigmoid(z2)
+a2 = cat(2, ones(m,1), a2)  % add column of ones
+z3 = a2 * Theta2'
+a3 = sigmoid(z3)
 
-
-
-
-
-
-
+[val, p] = max(a3')
 
 % =========================================================================
-
 
 end
