@@ -1,7 +1,6 @@
 function cost(Theta::Array{Matrix{Float64}},
               X::Matrix{Float64}, Y::Matrix{Int32}; 
               activationFn::Function=sigmoid,
-              activationGradient::Function=sigmoidGradient,
               lambda::Float64=0)
 
   ### Compute Cost (J)
@@ -15,7 +14,7 @@ function cost(Theta::Array{Matrix{Float64}},
   A[1] = [1 X]
   for l in 2:L
     Z[l] = A[l-1] * Theta[l-1]
-    A[l] = activationFn.(Z[l])
+    A[l] = activationFn(Z[l])
   end
 
   J = -sum(Y .* log(A[end]) + (1-Y) .* log(1-A[end])) / N
@@ -36,7 +35,7 @@ function cost(Theta::Array{Matrix{Float64}},
         dl = (A[end][n,:] - Y[n,:])'
         Theta_grad[l] .+= dl * A[l] / m
       else
-        dl = (Theta[l+1] * dl)[2:end] .* activationGradient(Z[l])
+        dl = (Theta[l+1] * dl)[2:end] .* activationFn(Z[l], gradient=true)
         Theta_grad[l] .+= dl * A[l][n,:] / m
       end
     end
