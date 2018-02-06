@@ -35,15 +35,15 @@ Y = formatY(y_train, numClasses)
 
 
 #include("../src/MyNN.jl")
-idx = randperm(length(y_train))[1:1000]
-out = MyNN.fit(X[idx,:], Y[idx,:], [25], 1E-3,
-               maxIters=200, eps=1E-2, lambda=1.0);
+idx = randperm(length(y_train))#[1:10000]
+out = MyNN.fit(X[idx,:], Y[idx,:], [35], 2.0,
+               maxIters=5000, eps=1E-4, lambda=1.0);
 
 ### Training Error
-(pred,predY) = MyNN.predict(X, out.Theta)
+(pred,predYtrain) = MyNN.predict(X, out.Theta)
 y_train[y_train .== 0] = 10
-mean(y_train .== predY)
-#[y_train predY]
+[y_train predYtrain]
+mean(y_train .== predYtrain)
 
 X_test = npzread("../dat/mnist_test_X.npy");
 y_test = npzread("../dat/mnist_test_y.npy");
@@ -52,8 +52,8 @@ Xnew[:,2:end] = (Xnew[:,2:end] .- mean(X[:,2:end], 1)) / maximum(X[:, 2:end])
 Ynew = formatY(y_test, numClasses)
 
 
-(pred,predY) = MyNN.predict(Xnew, out.Theta)
+(pred,predYtest) = MyNN.predict(Xnew, out.Theta)
 y_test[y_test .== 0] = 10
-mean(y_test .== predY)
-#[y_test  predY]
+[y_test  predY]
+mean(y_test .== predYtest)
 

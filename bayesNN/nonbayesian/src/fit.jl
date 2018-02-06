@@ -5,7 +5,7 @@ function fit(X::Matrix{Float64}, Y::Matrix{Int32},
 
   """
   Assumes X has a intercept column.
-  numUnitsInHiddenLayer: including bias unit
+  numUnitsInHiddenLayer: including bias units
   """
   const (N,P) = size(X)
   const numClasses = size(Y,2)
@@ -28,7 +28,7 @@ function fit(X::Matrix{Float64}, Y::Matrix{Int32},
     State(Theta,ThetaGrad,A,Z)
   end
 
-  ### Check gradient######
+  ### Check gradient###### LEAVE THIS COMMENTED FOR REFERENCE
   #const (dummy, vDimGlobal) = toVec(state.Theta)
   #i = 1
   #function f(v::Vector{Float64})
@@ -56,7 +56,7 @@ function fit(X::Matrix{Float64}, Y::Matrix{Int32},
     return cost(state, X, Y, activationFn=activationFn, lambda=lambda)
   end 
 
-  return optim(state, update, maxIters=maxIters, eps=eps) # TODO:TURN ON
+  return optim(state, update, maxIters=maxIters, eps=eps)
 
   #### TODO: TURN OFF THE FOLLOWING WHEN DONE CHECKING
   #(init_v, dummy) = toVec(state.Theta)
