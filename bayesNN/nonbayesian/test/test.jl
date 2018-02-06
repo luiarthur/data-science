@@ -42,7 +42,7 @@ idx = randperm(length(y_train))#[1:10000]
 (pred,predYtrain) = MyNN.predict(X, out.Theta)
 y_train[y_train .== 0] = 10
 [y_train predYtrain]
-mean(y_train .== predYtrain)
+println("Training Error: ", mean(y_train .!= predYtrain))
 
 X_test = npzread("../dat/mnist_test_X.npy");
 y_test = npzread("../dat/mnist_test_y.npy");
@@ -54,5 +54,5 @@ Ynew = formatY(y_test, numClasses)
 (pred,predYtest) = MyNN.predict(Xnew, out.Theta)
 y_test[y_test .== 0] = 10
 [y_test  predYtest]
-mean(y_test .== predYtest)
+println("Test Error: ", mean(y_test .!= predYtest))
 
