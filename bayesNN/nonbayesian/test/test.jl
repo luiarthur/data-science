@@ -37,7 +37,7 @@ Y = formatY(y_train, numClasses)
 #include("../src/MyNN.jl")
 idx = randperm(length(y_train))#[1:10000]
 out = MyNN.fit(X[idx,:], Y[idx,:], [35], 2.0,
-               maxIters=10000, eps=1E-4, lambda=1.0);
+               maxIters=10000, eps=1E-4, lambda=2.0);
 
 ### Training Error
 (pred,predYtrain) = MyNN.predict(X, out.Theta)
@@ -54,6 +54,6 @@ Ynew = formatY(y_test, numClasses)
 
 (pred,predYtest) = MyNN.predict(Xnew, out.Theta)
 y_test[y_test .== 0] = 10
-[y_test  predY]
+[y_test  predYtest]
 mean(y_test .== predYtest)
 
