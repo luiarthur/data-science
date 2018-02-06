@@ -1,5 +1,6 @@
 module MyNN
 
+using Optim ### TODO: Turn off after debugging
 
 include("sigmoid.jl")
 include("State.jl")
