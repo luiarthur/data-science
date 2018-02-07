@@ -54,7 +54,8 @@ const numClasses = 10
 
 ### FORMAT DATA
 X_pre = formatX(X_train)
-X[:,2:end] = (X_pre[:,2:end] .- mean(X_pre[:,2:end], 1)) / maximum(X_pre[:, 2:end])
+X = copy(X_pre)
+X = (X_pre[:,2:end] .- mean(X_pre[:,2:end], 1)) / maximum(X_pre[:, 2:end])
 Y = formatY(y_train, numClasses)
 #[y_train[idx] Y]
 
