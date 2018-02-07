@@ -1,4 +1,4 @@
-using NPZ
+using NPZ, RCall
 include("../src/MyNN.jl")
 
 function formatY(y, numClasses::Int64)
