@@ -39,7 +39,7 @@ Y = formatY(y_train, numClasses)
 R"""
 pX = prcomp(X)
 pX_prop = cumsum(pX$sd^2) / sum(pX$sd^2)
-thresh = .90
+thresh = .90 # TODO: vary this
 idx = min(which(pX_prop > thresh))
 X_pcr = cbind(1, pX$x[,1:idx])
 """
