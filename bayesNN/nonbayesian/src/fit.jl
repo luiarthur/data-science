@@ -1,7 +1,8 @@
 function fit(X::Matrix{Float64}, Y::Matrix{Int32},
              numUnitsInHiddenLayer::Array{Int64}, alpha::Float64;
              lambda::Float64=0.0, activationFn::Function=sigmoid,
-             maxIters::Int64=100, eps::Float64=1E-3, eps_init::Float64=0.1)
+             maxIters::Int64=100, eps::Float64=1E-3, eps_init::Float64=0.1,
+             printIter::Bool=false)
 
   """
   Assumes X has a intercept column.
@@ -56,7 +57,7 @@ function fit(X::Matrix{Float64}, Y::Matrix{Int32},
     return cost(state, X, Y, activationFn=activationFn, lambda=lambda)
   end 
 
-  return optim(state, update, maxIters=maxIters, eps=eps)
+  return optim(state, update, maxIters=maxIters, eps=eps, printIter=printIter)
 
   #### TODO: TURN OFF THE FOLLOWING WHEN DONE CHECKING
   #(init_v, dummy) = toVec(state.Theta)
