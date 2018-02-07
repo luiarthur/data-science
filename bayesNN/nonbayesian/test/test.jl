@@ -36,7 +36,8 @@ Y = formatY(y_train, numClasses)
 
 #include("../src/MyNN.jl")
 idx = randperm(length(y_train))#[1:10000]
-@time out = MyNN.fit(X[idx,:], Y[idx,:], [35], 2.0, maxIters=10000, eps=1E-4, lambda=3.0);
+@time out = MyNN.fit(X[idx,:], Y[idx,:], [35], 2.0, maxIters=10000, eps=1E-4, lambda=2.0);
+#@time out = MyNN.fit(X[idx,:], Y[idx,:], [35], 2.0, maxIters=10000, eps=1E-4, lambda=10.0);
 
 ### Training Error
 (pred,predYtrain) = MyNN.predict(X, out.Theta)
