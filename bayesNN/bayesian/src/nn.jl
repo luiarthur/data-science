@@ -34,6 +34,7 @@ function fit_nn(y::Matrix{Int32}, X::Matrix{Float64}, num_units::Array{Int32},
       A = X1
       for l in 2:L
         A = logistic.(A * state[l])
+        A[:,1] = ones(N)
       end
       return y .* log(A) + (1-y) .* log(1-A)
     end
