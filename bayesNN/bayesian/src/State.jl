@@ -1,6 +1,6 @@
 type State
   Theta::Array{Matrix{Float64}}
-  lambda_0::Float64
-  lambda_1::Float64
+  lambda::Float64
+  loglike::Float64
 end
 

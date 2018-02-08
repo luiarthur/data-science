@@ -1,6 +1,7 @@
 function fit(y::Vector{Int64}, X::Matrix{Float64}, H::Int64;
-             B::Int64=100, burn::Int64=100, numClasses::Int=0, prior=defaultPrior,
-             thin::Int=1, printEvery::Int64=100)::Array{State}
+             B::Int64=100, burn::Int64=100, numClasses::Int=0, 
+             prior::Prior=defaultPrior, printLoglike::Bool=false,
+             thin::Int=1, printEvery::Int64=100, init=nothing, eps::Float64=.001)
 
   """
   H: number of hidden units including bias
@@ -11,14 +12,7 @@ function fit(y::Vector{Int64}, X::Matrix{Float64}, H::Int64;
 
   ### Create Data Class ###
   const N = size(X, 1)
-  const Y = begin
-    YY = zeros(Int64, N, numClasses)
-    for i in 1:N
-      c = (y[i] == 0) ? numClasses : y[i]
-      YY[i, c] = 1
-    end
-    YY
-  end
+  const Y = y_vec2mat(y)
   const data = Data(Y, [ones(N) X])
   ### Create Data Class ###
 
@@ -26,11 +20,18 @@ function fit(y::Vector{Int64}, X::Matrix{Float64}, H::Int64;
   function update(state::State)::Void
     updateLambda(state, data, prior)
     updateTheta(state, data, prior)
+    if printLoglike
+      println("loglike: ", state.loglike)
+    end
     return Void()
   end
 
-  const init_Theta = [randn(size(data.X,2), H), randn(H, numClasses)]
-  const init = State(init_Theta, 1.0, 1.0)
+  const init_Theta = [rand(size(data.X,2), H) * 2eps - eps, randn(H, numClasses)]
+  const init_lambda = 1.0
+  const init_loglike = -Inf
+  if init === nothing
+    init = State(init_Theta, init_lambda, init_loglike)
+  end
 
   return gibbs(init, update, B, burn, thin, printEvery)
 end

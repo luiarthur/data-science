@@ -1,7 +1,8 @@
 # compare with the other gibbs
 function gibbs{T}(init::T, update::Function, B::Int, burn::Int, thin::Int, printFreq::Int)
-  const out = Vector{T}(B)
+  const out = Array{T}(B)
   const state = deepcopy(init)
+  out[1] = deepcopy(init)
 
   for i in 2:(B+burn)
     if i <= burn
