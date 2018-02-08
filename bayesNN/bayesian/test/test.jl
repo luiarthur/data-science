@@ -16,34 +16,10 @@ X_test = BayesNN.scale(X_test, xbar, xmax)
 idx = randperm(length(y_train))
 
 ### Fit the Model ########################################################
-#n_train = 10000
-#X1 = [ones(n_train) X_train[idx[1:n_train],:]]
-#@time warmup = MyNN.fit(X1, Y_train[idx[1:n_train],:], [35], 1.0,
-#                        printIter=true, maxIters=10000, eps=1E-4, lambda=2.0)
-#n_train = 100
-#@time out = BayesNN.fit(y_train[idx[1:n_train]], X_train[idx[1:n_train],:], 35,
-#                        B=50, burn=5000, prior=BayesNN.Prior(10, 2, 10, .01),
-#                        printEvery=5, thin=10);
-#
-#n_train = 1000
-#@time out = BayesNN.fit(y_train[idx[1:n_train]], X_train[idx[1:n_train],:], 35,
-#                        B=50, burn=1000, prior=BayesNN.Prior(10, 2, 10, .01),
-#                        printEvery=5, thin=10, init=out[end]);
-
-#n_train = 10000
-#@time out = BayesNN.fit(y_train[idx[1:n_train]], X_train[idx[1:n_train],:], 35,
-#                        B=50, burn=0, prior=BayesNN.Prior(10, 2, 10, .01),
-#                        printEvery=5, thin=10,
-#                        init=BayesNN.State(warmup.Theta, 1/sqrt(2.0), -Inf));
-#n_train = 10000
-#@time out = BayesNN.fit(y_train[idx[1:n_train]], X_train[idx[1:n_train],:], 35,
-#                        B=50, burn=100, prior=BayesNN.Prior(10, 2, 10, .01),
-#                        printEvery=5, thin=10, init=out[end]);
-
 n_train = 10000
 @time out = BayesNN.fit(y_train[idx[1:n_train]], X_train[idx[1:n_train],:], 35,
-                        B=200, burn=10000, prior=BayesNN.Prior(10, 2, 10, .01),
-                        printEvery=5, thin=10);
+                        B=50, burn=50000, prior=BayesNN.Prior(10, 2, 10, .01),
+                        printEvery=5, thin=100);
 ### Fit the Model ########################################################
 
 
@@ -56,3 +32,17 @@ R"plot($lfc, type='b', xlab='MCMC iteration', ylab='loglike')";
 ### Predictions ###
 @time (pred_y, pred_Y) = BayesNN.predict(X_test, out)
 mean(pred_y .== y_test)
+BayesNN.confusion(pred_y, y_test, 10)
+pred_certainty = mean(pred_Y' .== pred_y, 2)
+
+### Look at confusion matrix of uncertain predictions ###
+idx = find(x -> x < .5, pred_certainty)
+[ y_test[idx] pred_y[idx] pred_Y[:,idx]' ]
+mean( y_test[idx] .== pred_y[idx] )
+BayesNN.confusion(pred_y[idx], y_test[idx], 10)
+
+### Look at confusion matrix of certain predictions ###
+idx_confident = find(x -> x > .5, pred_certainty);
+[ y_test[idx_confident] pred_y[idx_confident] pred_Y[:,idx_confident]' ]
+mean( y_test[idx_confident] .== pred_y[idx_confident] )
+BayesNN.confusion(pred_y[idx_confident], y_test[idx_confident], 10)
