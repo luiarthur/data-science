@@ -21,7 +21,7 @@ function fit(y::Vector{Int64}, X::Matrix{Float64}, H::Int64;
     updateLambda(state, data, prior)
     updateTheta(state, data, prior)
     if printLoglike
-      println("loglike: ", state.loglike)
+      println("log full conditional: ", state.log_fc)
     end
     return Void()
   end

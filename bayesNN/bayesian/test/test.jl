@@ -16,10 +16,10 @@ X_test = BayesNN.scale(X_test, xbar, xmax)
 idx = randperm(length(y_train))
 
 ### Fit the Model ########################################################
-n_train = 10000
-X1 = [ones(n_train) X_train[idx[1:n_train],:]]
-@time warmup = MyNN.fit(X1, Y_train[idx[1:n_train],:], [end][35], 1.0,
-                        printIter=true, maxIters=10000, eps=1E-4, lambda=2.0)
+#n_train = 10000
+#X1 = [ones(n_train) X_train[idx[1:n_train],:]]
+#@time warmup = MyNN.fit(X1, Y_train[idx[1:n_train],:], [35], 1.0,
+#                        printIter=true, maxIters=10000, eps=1E-4, lambda=2.0)
 #n_train = 100
 #@time out = BayesNN.fit(y_train[idx[1:n_train]], X_train[idx[1:n_train],:], 35,
 #                        B=50, burn=5000, prior=BayesNN.Prior(10, 2, 10, .01),
@@ -30,24 +30,28 @@ X1 = [ones(n_train) X_train[idx[1:n_train],:]]
 #                        B=50, burn=1000, prior=BayesNN.Prior(10, 2, 10, .01),
 #                        printEvery=5, thin=10, init=out[end]);
 
-n_train = 10000
-@time out = BayesNN.fit(y_train[idx[1:n_train]], X_train[idx[1:n_train],:], 35,
-                        B=50, burn=0, prior=BayesNN.Prior(10, 2, 10, .01),
-                        printEvery=5, thin=10,
-                        init=BayesNN.State(warmup.Theta, 1/sqrt(2.0), -Inf));
+#n_train = 10000
+#@time out = BayesNN.fit(y_train[idx[1:n_train]], X_train[idx[1:n_train],:], 35,
+#                        B=50, burn=0, prior=BayesNN.Prior(10, 2, 10, .01),
+#                        printEvery=5, thin=10,
+#                        init=BayesNN.State(warmup.Theta, 1/sqrt(2.0), -Inf));
+#n_train = 10000
+#@time out = BayesNN.fit(y_train[idx[1:n_train]], X_train[idx[1:n_train],:], 35,
+#                        B=50, burn=100, prior=BayesNN.Prior(10, 2, 10, .01),
+#                        printEvery=5, thin=10, init=out[end]);
 
 n_train = 10000
 @time out = BayesNN.fit(y_train[idx[1:n_train]], X_train[idx[1:n_train],:], 35,
-                        B=50, burn=100, prior=BayesNN.Prior(10, 2, 10, .01),
-                        printEvery=5, thin=10, init=out[end]);
+                        B=200, burn=10000, prior=BayesNN.Prior(10, 2, 10, .01),
+                        printEvery=5, thin=10);
 ### Fit the Model ########################################################
 
 
 ### View Posterior Samples ###
 lambda = [o.lambda for o in out]
-ll = [o.loglike for o in out]
+lfc = [o.log_fc for o in out]
 R"plotPost($lambda, main='lambda')";
-R"plot($ll, type='b', xlab='MCMC iteration', ylab='loglike')";
+R"plot($lfc, type='b', xlab='MCMC iteration', ylab='loglike')";
 
 ### Predictions ###
 @time (pred_y, pred_Y) = BayesNN.predict(X_test, out)

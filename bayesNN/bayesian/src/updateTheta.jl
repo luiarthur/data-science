@@ -1,4 +1,5 @@
 function updateTheta(state::State, data::Data, prior::Prior)::Void
+  const N = size(data.Y,1)
   (Theta_vec, dims) = toVec(state.Theta)
   P1 = size(state.Theta[1], 1)
   P2 = size(state.Theta[2], 1)
@@ -19,11 +20,19 @@ function updateTheta(state::State, data::Data, prior::Prior)::Void
     return -out
   end
 
-  Theta_vec = metropolis(Theta_vec, ll, lp, prior.cs)
 
-  state.Theta .= unvec(Theta_vec, dims)
+  #Theta_vec = metropolis(Theta_vec, ll, lp, prior.cs)
+  #state.Theta .= unvec(Theta_vec, dims)
+  #state.loglike = ll(Theta_vec) / N
+  ### Speed up ###
+  const cand = rand(MvNormal(Theta_vec, prior.cs))
+  const log_fc_curr = ll(cand) + lp(cand)
+  if log_fc_curr - state.log_fc * N > log(rand())
+    state.Theta .= unvec(cand, dims)
+    state.log_fc = log_fc_curr / N
+  end
+  ### End of Speed up ###
 
-  state.loglike = ll(Theta_vec) / size(data.Y, 1)
 
   return Void()
 end
