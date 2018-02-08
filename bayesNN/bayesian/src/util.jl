@@ -71,3 +71,15 @@ function y_vec2mat(y::Vector{Int64})
   end
   Y
 end
+
+function confusion(y_pred, y_truth, numClasses)
+  const N = length(y_truth)
+  C = zeros(Int64, numClasses, numClasses)
+
+  for i in 1:N
+    C[y_pred[i], y_truth[i]] += 1
+  end
+
+  return C ### columns are truth, rows are pred
+end
+
