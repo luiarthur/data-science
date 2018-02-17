@@ -62,37 +62,37 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
-X1 = cat(2, ones(m,1), X) % add column of ones
-z2 = X1 * Theta1'
-a2 = sigmoid(z2)
-a2 = cat(2, ones(m,1), a2)  % add column of ones
-z3 = a2 * Theta2'
-a3 = sigmoid(z3)
+X1 = cat(2, ones(m,1), X); % add column of ones
+z2 = X1 * Theta1';
+a2 = sigmoid(z2);
+a2 = cat(2, ones(m,1), a2);  % add column of ones
+z3 = a2 * Theta2';
+a3 = sigmoid(z3);
 
-h = a3
+h = a3;
 %[val, h] = max(a3')
 
-Y = zeros(size(h))
-idx = sub2ind(size(Y), (1:m)', (y))
-Y(idx) = 1
+Y = zeros(size(h));
+idx = sub2ind(size(Y), (1:m)', (y));
+Y(idx) = 1;
 
-J = -mean(sum(Y .* log(h) + (1-Y) .* log(1-h), 2), 1)
-J += (sum((Theta1(:,2:end) .^ 2)(:)) + sum((Theta2(:,2:end) .^ 2)(:))) * lambda / (2*m)
+J = -mean(sum(Y .* log(h) + (1-Y) .* log(1-h), 2), 1);
+J += (sum((Theta1(:,2:end) .^ 2)(:)) + sum((Theta2(:,2:end) .^ 2)(:))) * lambda / (2*m);
 
 % -------------------------------------------------------------
 
 for t=1:m
-  d3 = (a3(t,:) - Y(t,:))'
-  Theta2_grad += d3 * a2(t,:) / m
+  d3 = (a3(t,:) - Y(t,:))';
+  Theta2_grad += d3 * a2(t,:) / m;
 
-  d2 = (Theta2' * d3)(2:end) .* sigmoidGradient(z2(t,:)')
-  Theta1_grad += d2 * X1(t,:) / m
+  d2 = (Theta2' * d3)(2:end) .* sigmoidGradient(z2(t,:)');
+  Theta1_grad += d2 * X1(t,:) / m;
 end
 
 % =========================================================================
 
-Theta1_grad(:, 2:end) += lambda * Theta1(:, 2:end) / m
-Theta2_grad(:, 2:end) += lambda * Theta2(:, 2:end) / m
+Theta1_grad(:, 2:end) += lambda * Theta1(:, 2:end) / m;
+Theta2_grad(:, 2:end) += lambda * Theta2(:, 2:end) / m;
 
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
