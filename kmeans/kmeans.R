@@ -32,5 +32,7 @@ my.kmeans = function(X, K, iter.max=100, init=NULL, eps=1E-5) {
     iter = iter + 1
   }
 
-  list(labels=labels, centers=curr, iter=iter)
+  cost = dist_x(X, curr[labels, ])
+
+  list(labels=labels, centers=curr, iter=iter, cost=cost)
 }
