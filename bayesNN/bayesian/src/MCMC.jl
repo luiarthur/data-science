@@ -55,6 +55,16 @@ function metropolis(curr::Vector{Float64}, ll::Function, lp::Function, cs::Float
   return new_state
 end
 
+"""
+Langevin Monte Carlo (multivariate)
+"""
+function lmc(curr::Vector{Float64}, gradLogFC::Function, eps::Float64)
+  rand(MvNormal(curr + eps * gradLogFC(curr), sqrt(2*eps)))
+end
+
+"""
+Hamiltonian Monte Carlo (multivariate)
+"""
 function hmc(curr::Vector{Float64}, U::Function, grad_U::Function,
              eps::Float64, L::Int)::Vector{Float64}
   const M = length(curr)
