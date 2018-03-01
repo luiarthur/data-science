@@ -10,7 +10,6 @@ def one_hot(y, num_labels):
     return Y
 
 def initialize_weights(shape):
-    #W = tf.get_variable("W", [4, 4, 3, 8], initializer=tf.contrib.layers.xavier_initializer(seed=0))
     """ Weight initialization """
     weights = tf.random_normal(shape, stddev=0.1)
     return tf.Variable(weights)
@@ -23,18 +22,32 @@ def forward_prop(X, params):
     """
     W1 = params['W1']
     W2 = params['W2']
-    Z1 = tf.nn.sigmoid(tf.matmul(X, W1))
-    Z2 = tf.matmul(Z1, W2)
+    b1 = params['b1']
+    b2 = params['b2']
+    Z1 = tf.nn.sigmoid(tf.matmul(X, W1) + b1)
+    Z2 = tf.matmul(Z1, W2) + b2
     return Z2
     
-def compute_cost(Z2, Y):
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=Z2, labels=Y))
-    return cost
+#def compute_cost(Z2, Y):
+#    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=Z2, labels=Y))
+#    return cost
 
+def split_train_val(X, Y, val_prop=.3):
+    n = X.shape[0]
+    n_val = int(n * val_prop)
+    idx = np.random.permutation(n)
+    idx_val = idx[:n_val]
+    idx_train = idx[n_val:]
+    return {'X_train': X[idx_train,:],
+            'Y_train': Y[idx_train,:],
+            'X_val': X[idx_val,:],
+            'Y_val': Y[idx_val,:]}
 
 def mnist_model(X_train, Y_train, X_test, Y_test, hidden_layer_size,
-                learning_rate=.001, num_epochs=100,
+                learning_rate=.001, num_epochs=100, lam=0,
                 mini_batch_size=100, print_cost=True):
+
+    # TODO: Am I doing something wrong with the regualrizing?
 
     num_pixels = X_train.shape[1]
     num_classes = Y_train.shape[1]
@@ -47,13 +60,18 @@ def mnist_model(X_train, Y_train, X_test, Y_test, hidden_layer_size,
     # Initialize weights
     W1 = initialize_weights((num_pixels, hidden_layer_size))
     W2 = initialize_weights((hidden_layer_size, num_classes))
-    params = {"W1": W1, "W2": W2}
+    b1 = tf.Variable(tf.zeros(hidden_layer_size))
+    b2 = tf.Variable(tf.zeros(num_classes))
+    params = {"W1": W1, "W2": W2, "b1": b1, "b2": b2}
 
     # Forward prop
     Z2 = forward_prop(X, params)
 
     # Cost function
-    cost = compute_cost(Z2,Y)
+    #cost = compute_cost(Z2,Y)
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=Z2, labels=Y))
+    regularizer = tf.reduce_mean(tf.nn.l2_loss(W1) + tf.nn.l2_loss(W2))
+    cost = cost + lam * regularizer
 
     # Storage for costs in ephcs
     costs = []
@@ -94,13 +112,15 @@ def mnist_model(X_train, Y_train, X_test, Y_test, hidden_layer_size,
         
         # Calculate accuracy on the test set
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
-        print(accuracy)
+        if print_cost: print(accuracy)
         train_accuracy = accuracy.eval({X: X_train, Y: Y_train})
         test_accuracy = accuracy.eval({X: X_test, Y: Y_test})
-        print("Train Accuracy:", train_accuracy)
-        print("Test Accuracy:", test_accuracy)
+        if print_cost: print("Train Accuracy:", train_accuracy)
+        if print_cost: print("Test Accuracy:", test_accuracy)
                 
-        return train_accuracy, test_accuracy, params, costs
+        return {'train_accuracy': train_accuracy, 
+                'test_accuracy': test_accuracy,
+                'params': params, 'costs': costs}
 
 
 def plot_cost(costs, learning_rate):
