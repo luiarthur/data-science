@@ -9,10 +9,10 @@ def one_hot(y, num_labels):
     Y[np.arange(N), y] = 1
     return Y
 
-def initialize_weights(shape):
+def initialize_weights(shape, name=None):
     """ Weight initialization """
     weights = tf.random_normal(shape, stddev=0.1)
-    return tf.Variable(weights)
+    return tf.Variable(weights) if name == None else tf.Variable(weights, name)
 
 def forward_prop(X, params):
     """
@@ -27,7 +27,17 @@ def forward_prop(X, params):
     Z1 = tf.nn.sigmoid(tf.matmul(X, W1) + b1)
     Z2 = tf.matmul(Z1, W2) + b2
     return Z2
-    
+
+def predict(X, params):
+    # TODO: There should be a better way!!!
+    def sigmoid(x):
+        return 1 / (1 + np.exp(-x))
+
+    Z1 = sigmoid(np.matmul(X,params['W1']) + params['b1'])
+    Z2 = np.dot(Z1,params['W2']) + params['b2']
+    return np.argmax(Z2, 1)
+
+ 
 #def compute_cost(Z2, Y):
 #    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=Z2, labels=Y))
 #    return cost
@@ -59,25 +69,25 @@ def mnist_model(X_train, Y_train, X_test, Y_test, hidden_layer_size,
     Y = tf.placeholder(tf.float32, [None, num_classes])
 
     # Initialize weights
-    W1 = initialize_weights((num_pixels, hidden_layer_size))
-    W2 = initialize_weights((hidden_layer_size, num_classes))
-    b1 = tf.Variable(tf.zeros(hidden_layer_size))
-    b2 = tf.Variable(tf.zeros(num_classes))
+    W1 = initialize_weights([num_pixels, hidden_layer_size], 'W1')
+    W2 = initialize_weights([hidden_layer_size, num_classes], 'W2')
+    b1 = initialize_weights([hidden_layer_size], 'b1')
+    b2 = initialize_weights([num_classes], 'b2')
+    #b1 = tf.Variable(tf.zeros(hidden_layer_size))
+    #b2 = tf.Variable(tf.zeros(num_classes))
     params = {"W1": W1, "W2": W2, "b1": b1, "b2": b2}
 
     # Forward prop
     Z2 = forward_prop(X, params)
 
     # Cost function
-    #cost = compute_cost(Z2,Y)
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=Z2, labels=Y))
-    #regularizer = tf.reduce_mean(tf.nn.l2_loss(W1) + tf.nn.l2_loss(W2))
-    #cost = cost + lam * regularizer
-    # FIXME:
+    # References for regularization:
     # https://greydanus.github.io/2016/09/05/regularization/
     # http://www.ritchieng.com/machine-learning/deep-learning/tensorflow/regularization/
-    regularizer = lam * tf.nn.l2_loss(W1) + lam * tf.nn.l2_loss(W2)
-    cost = cost + tf.reduce_mean(regularizer)
+    cost = tf.reduce_mean(
+            tf.nn.softmax_cross_entropy_with_logits(logits=Z2, labels=Y))
+    regularizer = lam * (tf.nn.l2_loss(W1) + tf.nn.l2_loss(W2)) / mini_batch_size
+    cost = cost + regularizer
 
     # Storage for costs in ephcs
     costs = []
@@ -124,10 +134,15 @@ def mnist_model(X_train, Y_train, X_test, Y_test, hidden_layer_size,
         test_accuracy = accuracy.eval({X: X_test, Y: Y_test})
         if print_cost: print("Train Accuracy:", train_accuracy)
         if print_cost: print("Test Accuracy:", test_accuracy)
+
+        parameters = {'W1': sess.run(W1), 
+                      'W2': sess.run(W2),
+                      'b1': sess.run(b1),
+                      'b2': sess.run(b2)}
                 
         return {'train_accuracy': train_accuracy, 
                 'test_accuracy': test_accuracy,
-                'params': params, 'costs': costs}
+                'parameters': parameters, 'costs': costs, 'params': params}
 
 
 def plot_cost(costs, learning_rate):
