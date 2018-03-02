@@ -41,7 +41,7 @@ for i in range(num_models):
     model[i] = mnist_model(data['X_train'], data['Y_train'],
                            data['X_val'], data['Y_val'],
                            learning_rate=.001, lam=lam[i],
-                           hidden_layer_size=25, num_epochs=30,
+                           hidden_layer_size=25, num_epochs=50,
                            mini_batch_size=500)
 
 
@@ -64,21 +64,38 @@ plot_cost(costs[indmin_testerror], lam_best)
 final_model = mnist_model(X_train, Y_train,
                           X_test, Y_test,
                           learning_rate=.001, lam=lam_best,
-                          hidden_layer_size=25, num_epochs=50,
-                          mini_batch_size=500)
-
+                          hidden_layer_size=25, num_epochs=30,
+                          mini_batch_size=500, outdir='out/model')
 
 y_hat = predict(X_test, final_model['parameters'])
 np.mean(y_hat == test_labels)
 
 
 ### Stuff ###
-#sess = tf.Session()
-#saver = tf.train.import_meta_graph('out/model.ckpt.meta')
-#saver.restore(sess,tf.train.latest_checkpoint('out/'))
+#with tf.Session() as sess:
+#    saver = tf.train.import_meta_graph('out/model.ckpt.meta')
+#    saver.restore(sess,tf.train.latest_checkpoint('out/'))
 #
-#keys = final_model['params'].keys()
+#    keys = final_model['params'].keys()
+#    params = {}
+#    for k in keys:
+#        p = sess.run(k+":0")
+#        params[k] = tf.Variable(p, p.shape)
+
+
+#ops.reset_default_graph() 
+#X = tf.constant(X_test, dtype=tf.float32)
+#keys = final_model['parameters'].keys()
 #params = {}
-#for k in keys:
-#    params[k] = sess.run(k+":0")
+#for k in keys:           
+#    p = final_model['parameters'][k]
+#    print p
+#    params[k] = tf.Variable(p)
 #
+#Z2 = forward_prop(X, params)
+#
+#init = tf.global_variables_initializer()
+#with tf.Session() as sess:
+#    sess.run(init)
+#    pred_y = sess.run(tf.argmax(Z2, 1))
+

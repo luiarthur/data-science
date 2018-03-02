@@ -30,14 +30,25 @@ def forward_prop(X, params):
     Z2 = tf.matmul(Z1, W2) + b2
     return Z2
 
-def predict(X, params):
-    # TODO: There should be a better way!!!
-    def sigmoid(x):
-        return 1 / (1 + np.exp(-x))
+def predict(X, parameters, reset_graph=True):
+    if reset_graph: ops.reset_default_graph() 
 
-    Z1 = sigmoid(np.matmul(X,params['W1']) + params['b1'])
-    Z2 = np.dot(Z1,params['W2']) + params['b2']
-    return np.argmax(Z2, 1)
+    X = tf.constant(X, dtype=tf.float32)
+    keys = parameters.keys()
+    params = {}
+
+    for k in keys:           
+        p = parameters[k]
+        params[k] = tf.Variable(p)
+
+    Z = forward_prop(X, params)
+
+    init = tf.global_variables_initializer()
+    with tf.Session() as sess:
+        sess.run(init)
+        pred_y = sess.run(tf.argmax(Z, 1))
+
+    return pred_y
 
  
 #def compute_cost(Z2, Y):
@@ -61,7 +72,7 @@ def mnist_model(X_train, Y_train, X_test, Y_test, hidden_layer_size,
                 mini_batch_size=100, print_cost=True, print_accuracy=True,
                 outdir=None):
 
-     # Clear tf graphs after they are used
+    # Clear tf graphs after they are used
     ops.reset_default_graph() 
 
     # Save shapes to variables for convenience
