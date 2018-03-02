@@ -41,13 +41,12 @@ for i in range(num_models):
     model[i] = mnist_model(data['X_train'], data['Y_train'],
                            data['X_val'], data['Y_val'],
                            learning_rate=.001, lam=lam[i],
-                           hidden_layer_size=25, num_epochs=50,
-                           mini_batch_size=1000)
+                           hidden_layer_size=25, num_epochs=30,
+                           mini_batch_size=500)
 
 
 ### Plot Cost ###
 costs = [mod['costs'] for mod in model]
-costs_last = [c[-1] for c in costs]
 test_errors = [1 - mod['test_accuracy'] for mod in model]
 indmin_testerror = np.argmin(test_errors)
 lam_best = lam[indmin_testerror]
@@ -55,8 +54,8 @@ lam_best = lam[indmin_testerror]
 plot_cost(costs[indmin_testerror], lam_best)
 
 ### View the trained parameters
-p = model[0]['parameters']
-p = model[0]['params']
+#model[0]['parameters']
+#model[0]['params']
 #tf.trainable_variables()
 
 
@@ -71,3 +70,15 @@ final_model = mnist_model(X_train, Y_train,
 
 y_hat = predict(X_test, final_model['parameters'])
 np.mean(y_hat == test_labels)
+
+
+### Stuff ###
+#sess = tf.Session()
+#saver = tf.train.import_meta_graph('out/model.ckpt.meta')
+#saver.restore(sess,tf.train.latest_checkpoint('out/'))
+#
+#keys = final_model['params'].keys()
+#params = {}
+#for k in keys:
+#    params[k] = sess.run(k+":0")
+#
