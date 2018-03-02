@@ -153,6 +153,9 @@ def mnist_model(X_train, Y_train, X_test, Y_test, hidden_layer_size,
                 # the data (X,Y). We feed actual data into the model
                 # by supplying a dictionary to feed_dict as {X: my_X, Y: my_Y},
                 # where my_X and my_Y are the actual data (like a np matrix).
+                # Also, when `optimizer` is run, only one update is done. 
+                # That is only one (and not multiple) step of the gradient
+                # descent is done. Hence, this is SGD with minibatches.
                 _ , mini_cost = sess.run(fetches=[optimizer, cost],
                                          feed_dict={X:mini_X, Y:mini_Y})
                 epoch_cost += mini_cost / num_minibatches
