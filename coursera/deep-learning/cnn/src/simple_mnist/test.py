@@ -32,7 +32,7 @@ Y_test = one_hot(test_labels, num_classes)
 #model = mnist_model(X_train, Y_train, X_test, Y_test, 35, num_epochs=20)
 
 num_models = 5
-lam = np.linspace(0, 2, num_models)
+lam = np.linspace(0, 3, num_models)
 model = [None] * num_models
 
 data = split_train_val(X_train, Y_train, val_prop=.3)
@@ -52,13 +52,12 @@ test_errors = [1 - mod['test_accuracy'] for mod in model]
 indmin_testerror = np.argmin(test_errors)
 lam_best = lam[indmin_testerror]
 
-plot_cost(costs[indmin_testerror], lam[indmin_testerror])
+plot_cost(costs[indmin_testerror], lam_best)
 
 ### View the trained parameters
 p = model[0]['parameters']
 p = model[0]['params']
 #tf.trainable_variables()
-forward_prop(X_train, p)
 
 
 ### TODO ###
@@ -66,7 +65,7 @@ forward_prop(X_train, p)
 final_model = mnist_model(X_train, Y_train,
                           X_test, Y_test,
                           learning_rate=.001, lam=lam_best,
-                          hidden_layer_size=25, num_epochs=20,
+                          hidden_layer_size=25, num_epochs=50,
                           mini_batch_size=500)
 
 

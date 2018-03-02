@@ -114,6 +114,10 @@ def mnist_model(X_train, Y_train, X_test, Y_test, hidden_layer_size,
                 mini_X = X_train[idx, :]
                 mini_Y = Y_train[idx, :]
 
+                # sess.run([a, b]) will output the evaluation of (a,b)
+                # Since the result of the optimizer is not important, 
+                # it is not stored. Hence `_`. The evaluation of the cost
+                # function is important. Hence `mini_cost`.
                 _ , mini_cost = sess.run([optimizer, cost], feed_dict={X:mini_X, Y:mini_Y})
                 epoch_cost += mini_cost / num_minibatches
 
@@ -141,7 +145,7 @@ def mnist_model(X_train, Y_train, X_test, Y_test, hidden_layer_size,
                       'b2': sess.run(b2)}
                 
         return {'train_accuracy': train_accuracy, 
-                'test_accuracy': test_accuracy,
+                'test_accuracy': test_accuracy, 'op': op,
                 'parameters': parameters, 'costs': costs, 'params': params}
 
 
