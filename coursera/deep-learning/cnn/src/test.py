@@ -32,7 +32,7 @@ Y_test = one_hot(test_labels, 10)
 #model = mnist_model(X_train, Y_train, X_test, Y_test, 35, num_epochs=20)
 
 num_models = 5
-lam = np.linspace(0, 2, num_models)
+lam = np.linspace(0, 3, num_models)
 model = [None] * num_models
 
 data = split_train_val(X_train, Y_train, val_prop=.3)
@@ -40,8 +40,9 @@ for i in range(num_models):
     print("lambda: ", lam[i])
     model[i] = mnist_model(data['X_train'], data['Y_train'],
                            data['X_val'], data['Y_val'],
+                           learning_rate=.001, lam=lam[i],
                            hidden_layer_size=35, num_epochs=50,
-                           mini_batch_size=500, lam=lam[i])
+                           mini_batch_size=500)
 
 ### Plot Cost ###
 costs = [mod['costs'] for mod in model]

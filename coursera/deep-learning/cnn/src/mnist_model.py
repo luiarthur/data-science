@@ -43,6 +43,7 @@ def split_train_val(X, Y, val_prop=.3):
             'X_val': X[idx_val,:],
             'Y_val': Y[idx_val,:]}
 
+
 def mnist_model(X_train, Y_train, X_test, Y_test, hidden_layer_size,
                 learning_rate=.001, num_epochs=100, lam=0,
                 mini_batch_size=100, print_cost=True):
@@ -70,14 +71,20 @@ def mnist_model(X_train, Y_train, X_test, Y_test, hidden_layer_size,
     # Cost function
     #cost = compute_cost(Z2,Y)
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=Z2, labels=Y))
-    regularizer = tf.reduce_mean(tf.nn.l2_loss(W1) + tf.nn.l2_loss(W2))
-    cost = cost + lam * regularizer
+    #regularizer = tf.reduce_mean(tf.nn.l2_loss(W1) + tf.nn.l2_loss(W2))
+    #cost = cost + lam * regularizer
+    # FIXME:
+    # https://greydanus.github.io/2016/09/05/regularization/
+    # http://www.ritchieng.com/machine-learning/deep-learning/tensorflow/regularization/
+    regularizer = lam * tf.nn.l2_loss(W1) + lam * tf.nn.l2_loss(W2)
+    cost = cost + tf.reduce_mean(regularizer)
 
     # Storage for costs in ephcs
     costs = []
 
     # Backprop. Define the optimizer.
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+    #optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
 
     ### The next six lines is pretty standard boilerplate.
     # Initialize all the variables (defined previously using `tf.Variable`) globally
@@ -89,7 +96,7 @@ def mnist_model(X_train, Y_train, X_test, Y_test, hidden_layer_size,
         ### End of the boilerplate.
 
         for epoch in range(num_epochs):
-            minibatch_cost = 0.0
+            epoch_cost = 0.0
             num_minibatches = int(N / mini_batch_size)
 
             for minibatch in range(num_minibatches):
@@ -97,13 +104,13 @@ def mnist_model(X_train, Y_train, X_test, Y_test, hidden_layer_size,
                 mini_X = X_train[idx, :]
                 mini_Y = Y_train[idx, :]
 
-                _ , accumulated_cost = sess.run([optimizer, cost], feed_dict={X:mini_X, Y:mini_Y})
-                minibatch_cost += accumulated_cost / num_minibatches
+                _ , mini_cost = sess.run([optimizer, cost], feed_dict={X:mini_X, Y:mini_Y})
+                epoch_cost += mini_cost / num_minibatches
 
             # Print the cost every epoch
             if print_cost == True:
-                print ("Cost after epoch %i: %f" % (epoch, minibatch_cost))
-                costs.append(minibatch_cost)
+                print ("Cost after epoch %i: %f" % (epoch, epoch_cost))
+                costs.append(epoch_cost)
 
 
         # Calculate the correct predictions
