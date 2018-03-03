@@ -203,3 +203,38 @@ def plot_cost(costs, learning_rate):
     plt.show()
 
 
+#def plot_dat(X, grid_x=None, grid_y=None, dest=None, size=None):
+#    """ 
+#    In:
+#        - X: Multivariate of time series
+#    """
+#
+#    J = X.shape[1]
+#    plt.figure(figsize=size)
+#
+#    if grid_x is None: grid_x = int(np.sqrt(J))
+#
+#    if grid_y is None:
+#        grid_y = J / grid_x
+#        if grid_y * grid_x < J:
+#            grid_y += 1
+#
+#    for j in xrange(J):
+#        plt.subplot(grid_y, grid_x, j+1)        
+#        plt.plot(X[:,j])
+#        plt.tight_layout() 
+#
+#    if dest == None:
+#        plt.show()
+#    else:
+#        plt.savefig(dest)
+
+def plot_images(layer, rows, cols, shape=(8,8), dest=None):
+    fig=plt.figure(figsize=shape)
+    for i in range(rows*cols):
+        fig.add_subplot(rows, cols, i + 1)
+        plt.axis('off')
+        plt.imshow(layer[:,:,i])
+    plt.show()
+
+

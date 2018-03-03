@@ -41,7 +41,7 @@ for i in range(num_models):
     model[i] = mnist_model(data['X_train'], data['Y_train'],
                            data['X_val'], data['Y_val'],
                            learning_rate=.001, lam=lam[i],
-                           hidden_layer_size=25, num_epochs=50,
+                           hidden_layer_size=25, num_epochs=30,
                            mini_batch_size=500)
 
 
@@ -99,3 +99,11 @@ np.mean(y_hat == test_labels)
 #    sess.run(init)
 #    pred_y = sess.run(tf.argmax(Z2, 1))
 
+### Visualize Weights ###
+W1 = final_model['parameters']['W1']
+W2 = final_model['parameters']['W2']
+layer1 = W1.reshape((28, 28, 25)) + final_model['parameters']['b1']
+layer2 = W2.reshape((5, 5, 10)) + final_model['parameters']['b2']
+
+plot_images(layer1, 5, 5)
+plot_images(layer2, 2, 5, shape=(8,4))
