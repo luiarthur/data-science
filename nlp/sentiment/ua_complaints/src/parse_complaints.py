@@ -85,7 +85,7 @@ def get_ngrams(text, n=2):
     except:
         return ""
 
-all_ngrams = map(lambda (complaint,_) : get_ngrams(complaint, 1), ua_complaints)
+all_ngrams = map(lambda (complaint,_) : get_ngrams(complaint, 2), ua_complaints)
 
 ngram_freq = dict()
 for text in all_ngrams:
