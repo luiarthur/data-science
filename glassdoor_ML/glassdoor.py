@@ -3,6 +3,7 @@ import numpy as np
 import nltk
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+#from pyspark.ml.classification import RandomForestClassifier
 import sys
 import util
 import nn
@@ -12,6 +13,7 @@ import nn
 ### Read Data
 DATA_DIR = 'dat/jobs.csv'
 dat = pd.read_csv(DATA_DIR)
+#dat = spark.read.csv(DATA_DIR, header=True)
 colnames = list(dat)
 dat = dat.as_matrix()
 num_obs = len(dat)
@@ -40,7 +42,7 @@ def toXY(data):
     X = data[:,:7]
 
     #X = data[:,[0,1,2,3,4,5,6,9,10]]
-    Z = np.array(map(vec_mgoc, X[:,-1]))
+    Z = np.array(map(vec_mgoc, data[:,-1]))
     X = np.concatenate((X,Z),1)
     #X[:,-2] = map(vec_user, X[:,-2])
 
@@ -58,7 +60,7 @@ def upsampleClass(data, c):
     idx_majority = np.argwhere(data['y'] != c).flatten()
     idx_new = np.concatenate( (idx_minority_new, idx_majority) )
     X_new = data['X'][idx_new]
-    return {'X': X_new + np.random.normal(0, .001, X_new.shape),
+    return {'X': X_new + np.random.normal(0, .1, X_new.shape),
             'y': data['y'][idx_new]}
 
 
@@ -84,17 +86,20 @@ dat_train = toXY(dat[train_and_val_idx[validation_size:], :])
 ### Model
 print "Training Model..."
 #rf = RandomForestClassifier(max_depth=2, n_estimators=50)
-#rf = RandomForestClassifier()
-logreg = LogisticRegression(C=.01, penalty='l1')
+rf = RandomForestClassifier()
+#logreg = LogisticRegression(C=.01, penalty='l1')
 
 def fit_model(data):
-    #return rf.fit(data['X'], data['y'])
-    return logreg.fit(data['X'], data['y'])
+    return rf.fit(data['X'], data['y'])
+    #return logreg.fit(data['X'], data['y'])
 
 
 ### Logistic Regression
-u = upsampleClass(dat_train, 1)
-mod = fit_model(upsampleClass(dat_train, 1))
+N = 100000
+u_train = upsampleClass(dat_train, 1)
+u_train['X'] = u_train['X'][:N]
+u_train['y'] = u_train['y'][:N]
+mod = fit_model(upsampleClass(u_train, 1))
 pred_val = mod.predict(dat_val['X'])
 conf = util.confusion(pred_val, dat_val['y'], numClasses=2)
 print conf
