@@ -48,6 +48,7 @@ def cnn_model_fn(features, labels, mode):
     # First max pooling layer with a 2x2 filter and stride of 2
     # Input Tensor Shape: [batch_size, 28, 28, 32]
     # Output Tensor Shape: [batch_size, 14, 14, 32]
+    # Recall the dimension in the next layer is: (n + 2p - f) / s + 1
     pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], strides=2)
   
     # Convolutional Layer #2
@@ -106,8 +107,10 @@ def cnn_model_fn(features, labels, mode):
                                    predictions=predictions["classes"])
 
     # Add additional log for loss, and iteration (step)
-    training_hooks = tf.train.LoggingTensorHook(
-            {"loss": loss, "training accuracy": accuracy[1], "step": tf.train.get_global_step()}, every_n_iter=10)
+    metrics_to_log = {"loss": loss,
+                      "training accuracy": accuracy[1],
+                      "step": tf.train.get_global_step()}
+    training_hooks = tf.train.LoggingTensorHook(metrics_to_log, every_n_iter=10)
   
     # Configure the Training Op (for TRAIN mode)
     if mode == tf.estimator.ModeKeys.TRAIN:
