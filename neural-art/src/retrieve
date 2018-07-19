@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVER="alui@firedance.soe.ucsc.edu"
+SERVER="alui2@firedance.soe.ucsc.edu"
 DIR="repo/data-science/neural-art/src/out/"
 
 rsync -av $SERVER:~/$DIR/ out/
