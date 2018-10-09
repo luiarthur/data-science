@@ -21,4 +21,11 @@ object Hello {
   }
 
   heatmap(Z, Palette.jet(256))
+
+  //val canvas = Heatmap.plot(Z, Palette.jet(256))
+  //val headless = new Headless(canvas)
+  //headless.pack
+  //headless.setVisible(true)
+
+  //canvas.save(new java.io.File("headless.png"))
 }
