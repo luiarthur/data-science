@@ -2,6 +2,10 @@ import math
 import random
 from TuningParam import TuningParam
 
+# Example:
+# creating type name for function that takes in int and str as args
+# and returns float.
+# ctypedef float (*f_type)(int, str)
 
 def metropolisBase(curr: float, logFullCond, proposalSd):
     cand = random.normalvariate(curr, proposalSd)
