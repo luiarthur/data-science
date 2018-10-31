@@ -52,8 +52,7 @@ def update(s):
         def ll(sig2: float):
             out = 0.0
             for j in range(J):
-                for i in range(nj):
-                    out += stats.norm.logpdf(y[j][i], s.mu[j], math.sqrt(sig2))
+                out += stats.norm.logpdf(y[j], s.mu[j], math.sqrt(sig2))
 
             return out
 
