@@ -2,5 +2,5 @@ from distutils.core import setup
 from Cython.Build import cythonize
 
 setup(
-    ext_modules = cythonize(["mcmc.pyx", "TuningParam.pxd"])
+    ext_modules = cythonize(["*.pyx"])
 )

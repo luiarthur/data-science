@@ -1,7 +1,7 @@
 cimport libc.math as math
 # cimport numpy as np
 import numpy as np
-cimport TuningParam
+cimport TuningParam as TP
 # from libcpp cimport bool
 
 # cimport numpy as np
@@ -23,11 +23,11 @@ cdef float metropolis(float curr, fl_fl_t logFullCond, float proposalSd):
 #     pass
 
 
-# cdef metropolisAdaptive(float curr, fl_fl_t logFullCond, TP.TuningParam tuner):
-#     draw = metropolis(curr, logFullCond, tuner.value)
-#     accept = (draw == curr)
-#     TP.update(tuner, accept)
-#     return draw
+cdef metropolisAdaptive(float curr, fl_fl_t logFullCond, TP.TuningParam tuner):
+    draw = metropolis(curr, logFullCond, tuner.value)
+    accept = (draw == curr)
+    TP.update(tuner, accept)
+    return draw
 
 
 cdef float logit(float p, float a, float b):
@@ -63,7 +63,9 @@ cdef float logpdfLogitX(float logitX, fl_fl_t logpdfX, float a, float b):
     return logpdfX(x) + logJacobian
 
 
-# cdef double metLogitAdaptive(float curr, fl_fl_t ll, fl_fl_t lp, TuningParam
+# Closures are not supported in Cython
+
+# cdef double metLogitAdaptive(float curr, fl_fl_t ll, fl_fl_t lp, TP.TuningParam
 #                               tuner, float a, float b):
 #     cdef lfc_logitX(float logit_x):
 #         cdef float x = sigmoid(logit_x, a, b)
@@ -71,15 +73,15 @@ cdef float logpdfLogitX(float logitX, fl_fl_t logpdfX, float a, float b):
 #         return ll(x) + lp_logitX
 # 
 #     cdef float logit_x = metropolisAdaptive(logit(curr, a, b), lfc_logitX, tuner)
-#
+# 
 #    return sigmoid(logit_x, a, b)
 
 
-# # def metLogAdaptive(curr: float, ll, lp, tuner):
-# #     def lfc_logX(log_x: float):
-# #         x = math.exp(log_x)
-# #         return ll(x) + logpdfLogX(log_x, lp)
-# # 
-# #     log_x = metropolisAdaptive(math.log(curr), lfc_logX, tuner)
-# # 
-# #     return math.exp(log_x)
+# def metLogAdaptive(curr: float, ll, lp, tuner):
+#     def lfc_logX(log_x: float):
+#         x = math.exp(log_x)
+#         return ll(x) + logpdfLogX(log_x, lp)
+# 
+#     log_x = metropolisAdaptive(math.log(curr), lfc_logX, tuner)
+# 
+#     return math.exp(log_x)

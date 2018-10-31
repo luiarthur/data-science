@@ -1,11 +1,11 @@
-from libcpp cimport bool
+# from libcpp cimport bool
 cimport libc.math as math
 
 
 ctypedef float (*int_fl_t)(int)
 
 
-cdef float delta_default(int n):
+cdef inline float delta_default(int n):
     return min(.01, n ** (-0.5))
 
 
@@ -19,15 +19,15 @@ cdef struct TuningParam:
 
 
 
-cdef TuningParam TuningParam_default(float value):
+cdef inline TuningParam TuningParam_default(float value):
     return TuningParam(value, 0, 0, 50, 0.44, delta_default)
 
 
-cdef float acceptance_rate(TuningParam tp):
+cdef inline float acceptance_rate(TuningParam tp):
     return tp.acceptance_count / tp.batch_size
 
 
-cdef void update(TuningParam tp, int accept):
+cdef inline void update(TuningParam tp, bint accept):
     if accept:
         tp.acceptance_count += 1
 
