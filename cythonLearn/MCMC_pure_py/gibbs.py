@@ -24,7 +24,7 @@ def gibbs(init, update_fn, nmcmc: int, burn: int, monitors=None,
 
     # Print Message
     def printMsg(mcmc_iter: int):
-        if mcmc_iter % printFreq == 0:
+        if printFreq is not 0 and mcmc_iter % printFreq == 0:
             print("{} / {}".format(mcmc_iter, nmcmc))
 
     # Burn
