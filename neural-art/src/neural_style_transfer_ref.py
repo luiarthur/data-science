@@ -48,7 +48,6 @@ keeping the generated image close enough to the original one.
 # References
     - [A Neural Algorithm of Artistic Style](http://arxiv.org/abs/1508.06576)
 '''
-from __future__ import print_function
 import argparse
 
 parser = argparse.ArgumentParser(description='Neural style transfer with Keras.')
